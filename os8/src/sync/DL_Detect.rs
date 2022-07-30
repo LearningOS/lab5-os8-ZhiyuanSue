@@ -1,5 +1,5 @@
-pub const MATRIX_AXIS :usize=128;
-pub const SEMA_BASE:usize=64;
+pub const MATRIX_AXIS :usize=10;
+pub const SEMA_BASE:usize=5;
 pub struct DL_detect{
     pub row_size:usize,
     pub have_enable_deadlock_detect:bool,
@@ -37,6 +37,19 @@ impl DL_detect{
     }
     pub fn detect(&self,column_id:usize) -> bool
     {
+        //没办法了，打印出来调试吧。生活啊。。。
+        /*
+        println!("rowsize {}",self.row_size);
+        println!("avaliable {:?}",self.avaliable);
+        println!("alloc");
+        for i in 0..self.row_size{
+            println!("\t{:?}",self.allocation[i]);
+        }
+        println!("need");
+        for i in 0..self.row_size{
+            println!("\t{:?}",self.need[i]);
+        }
+        */
         let mut work=[0;MATRIX_AXIS];
         let mut finish=[false;MATRIX_AXIS];
         for i in 0..MATRIX_AXIS{
@@ -56,7 +69,7 @@ impl DL_detect{
                             break;
                         }
                     }
-                    if all_need_satisify{
+                    if all_need_satisify==true{
                         for j in 0..MATRIX_AXIS
                         {
                             work[j]=work[j]+self.allocation[i][j];
@@ -85,12 +98,11 @@ impl DL_detect{
     }
     pub fn alloc_lock(&mut self,column_id:usize,row_id:usize)->isize
     {
-        self.avaliable[column_id]-=1;
-        self.allocation[row_id][column_id]+=1;
-        self.need[row_id][column_id]-=1;
-        if self.allocation[row_id][column_id]<0
+        if self.avaliable[column_id]>0
         {
-            return -1;
+            self.avaliable[column_id]-=1;
+            self.allocation[row_id][column_id]+=1;
+            self.need[row_id][column_id]-=1;
         }
         0
     }
