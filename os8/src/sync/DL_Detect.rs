@@ -1,5 +1,5 @@
-pub const MATRIX_AXIS :usize=10;
-pub const SEMA_BASE:usize=5;
+pub const MATRIX_AXIS :usize=32;
+pub const SEMA_BASE:usize=16;
 pub struct DL_detect{
     pub row_size:usize,
     pub have_enable_deadlock_detect:bool,
