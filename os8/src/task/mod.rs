@@ -85,6 +85,9 @@ pub fn exit_current_and_run_next(exit_code: i32) {
     
     // LAB5:clear all the allocation info in matrix
     let mut process_inner=process.inner_exclusive_access();
+    for i in 0..MATRIX_AXIS{
+        process_inner.DL_detect.avaliable[i]+=process_inner.DL_detect.allocation[tid][i];
+    }
     process_inner.DL_detect.allocation[tid]=[0;MATRIX_AXIS];
     drop(process_inner);
     

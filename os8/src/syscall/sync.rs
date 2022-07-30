@@ -126,16 +126,7 @@ pub fn sys_semaphore_up(sem_id: usize) -> isize {
     {
         let task = current_task().unwrap();
         let task_id=task.inner_exclusive_access().res.as_ref().unwrap().tid;
-        process_inner.DL_detect.add_need(sem_id+SEMA_BASE, task_id);
-        if process_inner.DL_detect.detect(sem_id+SEMA_BASE) ==false
-        {
-            return -0xDEAD;
-        }
-        else
-        {
-            process_inner.DL_detect.alloc_lock(sem_id+SEMA_BASE,task_id);
-        }
-        
+        process_inner.DL_detect.free_lock(sem_id+SEMA_BASE,task_id);
     }
     drop(process_inner);
     sem.up();
@@ -151,7 +142,15 @@ pub fn sys_semaphore_down(sem_id: usize) -> isize {
     {
         let task = current_task().unwrap();
         let task_id=task.inner_exclusive_access().res.as_ref().unwrap().tid;
-        process_inner.DL_detect.free_lock(sem_id+SEMA_BASE,task_id);
+        process_inner.DL_detect.add_need(sem_id+SEMA_BASE, task_id);
+        if process_inner.DL_detect.detect(sem_id+SEMA_BASE) ==false
+        {
+            return -0xDEAD;
+        }
+        else
+        {
+            process_inner.DL_detect.alloc_lock(sem_id+SEMA_BASE,task_id);
+        }
     }
     drop(process_inner);
     sem.down();

@@ -16,7 +16,7 @@ pub struct DL_detect{
 impl DL_detect{
     pub fn new()->Self{
         Self{
-            row_size:0,
+            row_size:1, //the main thread
             have_enable_deadlock_detect:false,
             //vecs
             all:[0;MATRIX_AXIS],
@@ -85,8 +85,8 @@ impl DL_detect{
     }
     pub fn alloc_lock(&mut self,column_id:usize,row_id:usize)->isize
     {
-        self.avaliable[column_id]+=1;
-        self.allocation[row_id][column_id]-=1;
+        self.avaliable[column_id]-=1;
+        self.allocation[row_id][column_id]+=1;
         self.need[row_id][column_id]-=1;
         if self.allocation[row_id][column_id]<0
         {
@@ -96,8 +96,8 @@ impl DL_detect{
     }
     pub fn free_lock(&mut self,column_id:usize,row_id:usize)->isize
     {
-        self.avaliable[column_id]-=1;
-        self.allocation[row_id][column_id]+=1;
+        self.avaliable[column_id]+=1;
+        self.allocation[row_id][column_id]-=1;
         0
     }
     pub fn add_need(&mut self,column_id:usize,row_id:usize)
